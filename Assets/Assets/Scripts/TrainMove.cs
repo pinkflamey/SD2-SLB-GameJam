@@ -4,7 +4,18 @@ using UnityEngine;
 
 public class TrainMove : MonoBehaviour
 {
-    public List<GameObject> gameObjects;
+    [Header("Settings")]
+    public float speed = 1f;
+
+    [Header("Toggles")]
+    public bool moving = true;
+    public int targetNumber = 0;
+
+    [Header("Information")]
+    public List<GameObject> targetList;
+    public GameObject target;
+
+    
 
     // Start is called before the first frame update
     void Start()
@@ -16,26 +27,57 @@ public class TrainMove : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        foreach (GameObject go in gameObjects)
+        target = targetList[targetNumber];
+
+        if (moving)
         {
-            MoveToPos(go.transform.position);
-            while(go.transform.position != transform.position)
-            {
-                Debug.Log("Going towards " + go.name + "...");
-            }
+            RotateToPos(target.transform.position);
+            transform.position = Vector2.MoveTowards(transform.position, target.transform.position, speed * Time.deltaTime);
+
         }
 
+        if (transform.position == target.transform.position)
+        {
 
-        /*Vector2 pos = new Vector2(transform.position.x, transform.position.y) + new Vector2(0, 5);
-        MoveToPos(pos);*/
+            if(targetNumber + 1 == targetList.Count)
+            {
+                moving = false;
+                target = null;
+                
+            }
+            else
+            {
+                targetNumber++;
+                Debug.Log("New target: " + targetNumber + ", name: " + targetList[targetNumber]);
+            }
+
+
+
+
+            
+
+        }
+
     }
 
-    void MoveToPos(Vector2 pos)
+    /*private void OnCollisionStay2D(Collision2D collision)
+    {
+        Debug.Log("Colliding...");
+
+        if(collision.gameObject.tag == "target")
+        {
+            Debug.Log("Colliding with target...");
+            
+        }
+        
+    }*/
+
+    /*void MoveToPos(Vector2 pos)
     {
         RotateToPos(pos);
         transform.position = Vector2.MoveTowards(transform.position, pos, 0.005f);
 
-    }
+    }*/
 
     void RotateToPos(Vector2 pos)
     {
